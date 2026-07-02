@@ -6,12 +6,13 @@
  * @Description: 
  * @FilePath: /strick/water_card/src/App.jsx
  */
-import { useRef, useState } from 'react'
-import CardViewer from './components/CardViewer'
+import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import CardDetails from './components/CardDetails'
 import CharacterSwitch from './components/CharacterSwitch'
 import { cards as standardCards } from './data/standard'
 import { cards as flashPrizeCards } from './data/flash_prize'
+
+const CardViewer = lazy(() => import('./components/CardViewer'))
 
 const collections = [
   { id: 'standard', label: '普卡', cards: standardCards },
@@ -23,6 +24,12 @@ export default function App() {
   const [selectedCardId, setSelectedCardId] = useState('001')
   const collection = collections.find((item) => item.id === collectionId) ?? collections[0]
   const card = collection.cards.find((item) => item.id === selectedCardId) ?? collection.cards[0]
+
+  useEffect(() => {
+    const loadingScreen = document.getElementById('app-loading')
+    const frame = requestAnimationFrame(() => loadingScreen?.remove())
+    return () => cancelAnimationFrame(frame)
+  }, [])
 
   return (
     <div className="min-h-screen overflow-x-hidden bg-[radial-gradient(circle_at_48%_40%,#202720_0,#101410_42%,#080a09_100%)] text-[#e6dfcb]">
@@ -44,7 +51,9 @@ export default function App() {
             <h1 className="m-0 text-[clamp(58px,7vw,104px)] font-black leading-none tracking-[.08em] [text-shadow:0_12px_35px_#000] max-sm:text-[58px]">{card.name}</h1>
             <p className="font-mono text-[10px] tracking-[.35em] text-[#746f63]">{card.romanizedName} <em className="text-[#9a2e25]">·</em> NO. {card.displayId ?? card.id}{card.edition ? ` · ${card.edition}` : ''}</p>
           </div>
-          <CardViewer key={`${collection.id}-${card.id}`} card={card} />
+          <Suspense fallback={<CardViewerFallback />}>
+            <CardViewer key={`${collection.id}-${card.id}`} card={card} />
+          </Suspense>
         </section>
         <CardDetails
           card={card}
@@ -57,6 +66,17 @@ export default function App() {
       <footer className="flex h-11 items-center justify-center gap-5 border-t border-[#e6dfcb1a] font-mono text-[8px] tracking-[.25em] text-[#4f554f]">
         <span>盐汽水真好喝 * P.W.Strick</span>
       </footer>
+    </div>
+  )
+}
+
+function CardViewerFallback() {
+  return (
+    <div className="absolute inset-[70px_5%_80px_30%] grid place-items-center max-lg:inset-[70px_2%_80px_28%] max-sm:inset-[150px_0_80px] mobile-device:inset-[150px_0_80px]" role="status" aria-label="正在加载卡片预览">
+      <div className="flex flex-col items-center gap-4 rounded-2xl border border-[#c7a76233] bg-[#080b09e6] px-7 py-6 shadow-[0_16px_45px_#000b]">
+        <span className="h-12 w-12 rounded-full border-2 border-[#c7a76226] border-r-[#e1ca8a] border-t-[#c7a762] motion-safe:animate-spin" aria-hidden="true" />
+        <span className="text-[11px] tracking-[.28em] text-[#e5d7ae]">预览加载中…</span>
+      </div>
     </div>
   )
 }
