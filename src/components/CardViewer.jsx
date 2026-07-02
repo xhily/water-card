@@ -470,7 +470,6 @@ export default function CardViewer({ card }) {
           </div>
         )}
         {loadState === 'error' && <span className="absolute inset-0 grid place-items-center text-xs text-[#bc6757]">卡片图片加载失败</span>}
-        <div className="card-shadow legacy-center-x pointer-events-none absolute bottom-7 left-1/2 h-12 w-60 rounded-full bg-black/60 blur-2xl" />
       </div>
 
       <div className={`absolute w-[90px] text-right font-mono text-[9px] text-[#777f76] max-sm:hidden mobile-device:hidden ${isFocusMode ? 'bottom-8 right-8' : 'bottom-12 right-0'}`} aria-hidden="true">
@@ -481,18 +480,18 @@ export default function CardViewer({ card }) {
         <small className="tracking-[.15em]">360° THREE.JS</small>
       </div>
 
-      <div className={`legacy-center-x absolute left-1/2 z-20 flex w-max max-w-[calc(100vw-16px)] items-center justify-center gap-5 whitespace-nowrap max-sm:gap-2 mobile-device:gap-2 ${isFocusMode ? 'bottom-6' : 'bottom-[-52px] max-sm:bottom-[-45px] mobile-device:bottom-[-45px]'}`}>
+      <div className={`legacy-center-x absolute left-1/2 z-20 flex w-max max-w-[calc(100vw-16px)] items-center justify-center gap-5 whitespace-nowrap max-sm:gap-1.5 mobile-device:gap-1.5 ${isFocusMode ? 'bottom-6' : 'bottom-[-52px] max-sm:bottom-[-45px] mobile-device:bottom-[-45px]'}`}>
         <SideButton label="正面" mark="正" active={!isBack} onClick={() => goTo(0)} />
-        <div className="flex shrink-0 items-center gap-3 text-[#a8aa9f] max-sm:hidden mobile-device:hidden">
+        <div className="flex shrink-0 items-center gap-3 text-[#a8aa9f]">
           <i className="font-sans text-[22px] not-italic text-[#c7a762]">↔</i>
-          <span className="text-[11px] leading-tight tracking-[.12em]">{isFocusMode ? `拖动${interactionMode === 'pan' ? '移动' : '翻转'}` : '拖动翻转'}<br /><small className="font-mono text-[8px] tracking-[.08em] text-[#596059]">{isFocusMode ? '顶部按钮切换模式' : '滚轮 / 双指放大'}</small></span>
+          <span className="text-[11px] leading-tight tracking-[.12em] max-sm:hidden mobile-device:hidden">{isFocusMode ? `拖动${interactionMode === 'pan' ? '移动' : '翻转'}` : '拖动翻转'}<br /><small className="font-mono text-[8px] tracking-[.08em] text-[#596059]">{isFocusMode ? '顶部按钮切换模式' : '滚轮 / 双指放大'}</small></span>
         </div>
         <SideButton label="背面" mark="背" active={isBack} onClick={() => goTo(180)} />
-        <span className="h-6 w-px shrink-0 bg-[#414740] max-sm:hidden mobile-device:hidden" aria-hidden="true" />
+        <span className="h-6 w-px shrink-0 bg-[#414740]" aria-hidden="true" />
         <ZoomButton label="缩小卡片" mark="−" onClick={() => changeZoom(-1)} disabled={zoom <= BASE_DISTANCE / MAX_DISTANCE + 0.02} />
         <span className="min-w-9 shrink-0 text-center font-mono text-[9px] text-[#8d938b]" aria-live="polite">{Math.round(zoom * 100)}%</span>
         <ZoomButton label="放大卡片" mark="＋" onClick={() => changeZoom(1)} disabled={zoom >= BASE_DISTANCE / MIN_DISTANCE - 0.05} />
-        <span className="h-6 w-px shrink-0 bg-[#414740] max-sm:hidden mobile-device:hidden" aria-hidden="true" />
+        <span className="h-6 w-px shrink-0 bg-[#414740]" aria-hidden="true" />
         <ActionButton label="下载当前样子的卡片" mark="↓" onClick={downloadView} />
       </div>
     </div>
