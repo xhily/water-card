@@ -56,6 +56,7 @@ export default function CardViewer({ card }) {
   const [dragging, setDragging] = useState(false)
   const [loadState, setLoadState] = useState('loading')
   const [interactionMode, setInteractionMode] = useState('pan')
+  const [downloadPreview, setDownloadPreview] = useState(null)
 
   const goTo = useCallback((nextAngle) => viewerRef.current?.goTo(nextAngle), [])
   const changeZoom = useCallback((direction) => viewerRef.current?.changeZoom(direction), [])
@@ -285,13 +286,26 @@ export default function CardViewer({ card }) {
       },
       download: () => {
         renderer.render(scene, camera)
+        const fileName = `水浒卡-${card.name}${card.edition ? `-${card.edition}` : ''}-${String(lastAngle).padStart(3, '0')}度.png`
+        const isUcBrowser = /UCWEB|UCBrowser/i.test(navigator.userAgent)
+
+        if (isUcBrowser) {
+          setDownloadPreview({
+            src: renderer.domElement.toDataURL('image/png'),
+            fileName,
+          })
+          return
+        }
+
         renderer.domElement.toBlob((blob) => {
           if (!blob || disposed) return
           const url = URL.createObjectURL(blob)
           const link = document.createElement('a')
           link.href = url
-          link.download = `水浒卡-${card.name}${card.edition ? `-${card.edition}` : ''}-${String(lastAngle).padStart(3, '0')}度.png`
+          link.download = fileName
+          document.body.appendChild(link)
           link.click()
+          link.remove()
           window.setTimeout(() => URL.revokeObjectURL(url), 1000)
         }, 'image/png')
       },
@@ -452,6 +466,25 @@ export default function CardViewer({ card }) {
             <span className="font-sans text-base">×</span> 退出放大
           </button>
         </>
+      )}
+
+      {downloadPreview && (
+        <div className="fixed inset-0 z-[70] flex flex-col items-center justify-center bg-[#050705f5] px-5 py-8" role="dialog" aria-modal="true" aria-label="保存卡片图片">
+          <button
+            type="button"
+            className="absolute right-5 top-5 rounded-full border border-[#e6dfcb55] bg-[#111511] px-4 py-2 text-xs text-[#e6dfcb]"
+            onClick={() => setDownloadPreview(null)}
+          >
+            关闭
+          </button>
+          <p className="mb-4 text-center text-sm tracking-[.12em] text-[#e1ca8a]">请长按图片，选择“保存图片”</p>
+          <img
+            className="max-h-[78vh] max-w-full rounded-lg object-contain shadow-[0_18px_60px_#000]"
+            src={downloadPreview.src}
+            alt={downloadPreview.fileName}
+          />
+          <small className="mt-4 text-center text-[10px] tracking-[.1em] text-[#777f76]">UC 浏览器暂不支持网页直接下载</small>
+        </div>
       )}
 
       <div
