@@ -17,13 +17,13 @@ export default function CardDetails({ card, cards, collection, onCardChange }) {
   return (
     <aside
       id="details"
-      className="relative border-l border-[#e6dfcb1f] bg-[#080b0940] px-[38px] pb-9 pt-8 max-lg:border-l-0 max-lg:border-t max-sm:px-6 max-sm:py-6"
+      className="relative border-l border-[#e6dfcb1f] bg-[#080b0940] px-[38px] pb-9 pt-8 max-lg:border-l-0 max-lg:border-t max-sm:px-6 max-sm:py-6 mobile-device:border-l-0 mobile-device:border-t mobile-device:px-6 mobile-device:py-6"
     >
-      <div className="mb-8 hidden lg:block">
+      <div className="desktop-character-switch mb-8 hidden lg:block">
         <CharacterSwitch card={card} cards={cards} onCardChange={onCardChange} />
       </div>
 
-      <div className="mb-10 font-mono text-[46px] tracking-[-.06em] text-[#dad3bf] max-lg:mb-8 max-sm:text-[34px]">
+      <div className="mb-10 font-mono text-[46px] tracking-[-.06em] text-[#dad3bf] max-lg:mb-8 max-sm:text-[34px] mobile-device:mb-8 mobile-device:text-[34px]">
         {card.displayId ?? card.id}
         <span className={`ml-3 inline-flex -translate-y-2 rounded-full border px-2.5 py-1 font-serif text-[9px] tracking-[.18em] ${
           collection.id === 'flash_prize'

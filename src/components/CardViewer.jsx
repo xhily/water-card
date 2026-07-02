@@ -434,7 +434,7 @@ export default function CardViewer({ card }) {
       className={`stage-wrap grid place-items-center transition-colors duration-300 ${
         isFocusMode
           ? 'fixed inset-0 z-40 bg-[#050705f2] backdrop-blur-sm'
-          : 'absolute inset-[70px_5%_80px_30%] max-lg:inset-[70px_2%_80px_28%] max-sm:inset-[150px_0_80px]'
+          : 'absolute inset-[70px_5%_80px_30%] max-lg:inset-[70px_2%_80px_28%] max-sm:inset-[150px_0_80px] mobile-device:inset-[150px_0_80px]'
       }`}
     >
       {isFocusMode && (
@@ -455,7 +455,7 @@ export default function CardViewer({ card }) {
       )}
 
       <div
-        className={`stage relative ${isFocusMode ? 'h-[calc(100vh-144px)] w-screen' : 'h-[590px] w-[420px] max-sm:h-[500px] max-sm:w-full'} ${dragging ? 'cursor-grabbing' : 'cursor-grab'}`}
+        className={`stage relative ${isFocusMode ? 'h-[calc(100vh-144px)] w-screen' : 'h-[590px] w-[420px] max-sm:h-[500px] max-sm:w-full mobile-device:h-[500px] mobile-device:w-full'} ${dragging ? 'cursor-grabbing' : 'cursor-grab'}`}
         aria-label={`${card.name}水浒卡 three.js 360度预览区，拖动旋转，滚轮或双指缩放`}
       >
         <div ref={mountRef} className="three-card-canvas absolute inset-0 touch-none" />
@@ -473,7 +473,7 @@ export default function CardViewer({ card }) {
         <div className="card-shadow pointer-events-none absolute bottom-7 left-1/2 h-12 w-60 -translate-x-1/2 rounded-full bg-black/60 blur-2xl" />
       </div>
 
-      <div className={`absolute w-[90px] text-right font-mono text-[9px] text-[#777f76] max-sm:hidden ${isFocusMode ? 'bottom-8 right-8' : 'bottom-12 right-0'}`} aria-hidden="true">
+      <div className={`absolute w-[90px] text-right font-mono text-[9px] text-[#777f76] max-sm:hidden mobile-device:hidden ${isFocusMode ? 'bottom-8 right-8' : 'bottom-12 right-0'}`} aria-hidden="true">
         <span className="text-base text-[#c5bfae]">{angle}°</span>
         <div className="relative my-2.5 h-px bg-[#3d443e]">
           <i className="absolute top-[-2px] h-[5px] w-[5px] rounded-full bg-[#c7a762]" style={{ left: `${(angle / 360) * 100}%` }} />
@@ -481,11 +481,11 @@ export default function CardViewer({ card }) {
         <small className="tracking-[.15em]">360° THREE.JS</small>
       </div>
 
-      <div className={`absolute left-1/2 z-20 flex -translate-x-1/2 items-center gap-5 whitespace-nowrap max-sm:gap-2 ${isFocusMode ? 'bottom-6' : 'bottom-[-52px] max-sm:bottom-[-45px]'}`}>
+      <div className={`absolute left-1/2 z-20 flex -translate-x-1/2 items-center gap-5 whitespace-nowrap max-sm:gap-2 mobile-device:gap-2 ${isFocusMode ? 'bottom-6' : 'bottom-[-52px] max-sm:bottom-[-45px] mobile-device:bottom-[-45px]'}`}>
         <SideButton label="正面" mark="正" active={!isBack} onClick={() => goTo(0)} />
         <div className="flex items-center gap-3 text-[#a8aa9f]">
           <i className="font-sans text-[22px] not-italic text-[#c7a762]">↔</i>
-          <span className="text-[11px] leading-tight tracking-[.12em] max-sm:hidden">{isFocusMode ? `拖动${interactionMode === 'pan' ? '移动' : '翻转'}` : '拖动翻转'}<br /><small className="font-mono text-[8px] tracking-[.08em] text-[#596059]">{isFocusMode ? '顶部按钮切换模式' : '滚轮 / 双指放大'}</small></span>
+          <span className="text-[11px] leading-tight tracking-[.12em] max-sm:hidden mobile-device:hidden">{isFocusMode ? `拖动${interactionMode === 'pan' ? '移动' : '翻转'}` : '拖动翻转'}<br /><small className="font-mono text-[8px] tracking-[.08em] text-[#596059]">{isFocusMode ? '顶部按钮切换模式' : '滚轮 / 双指放大'}</small></span>
         </div>
         <SideButton label="背面" mark="背" active={isBack} onClick={() => goTo(180)} />
         <span className="h-6 w-px bg-[#414740]" aria-hidden="true" />
@@ -511,7 +511,7 @@ function ActionButton({ label, mark, onClick }) {
   return (
     <button type="button" className="flex h-8 items-center gap-2 rounded-full border border-[#555c55] bg-transparent px-3 font-serif text-[10px] tracking-[.12em] text-[#c7a762] transition-colors hover:border-[#c7a762] hover:bg-[#c7a76214]" aria-label={label} title={label} onClick={onClick}>
       <span className="font-sans text-base leading-none">{mark}</span>
-      <span className="max-sm:hidden">下载</span>
+      <span className="max-sm:hidden mobile-device:hidden">下载</span>
     </button>
   )
 }
