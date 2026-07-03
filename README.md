@@ -10,18 +10,9 @@
 
 ## 页面预览
 
-### PC 端
-
-<a href="demo/water-pc.png" target="_blank">
-  <img src="demo/water-pc.png" alt="PC 端页面" width="600">
-</a>
-
-
-### 移动端
-
-<a href="demo/water-mobile.png" target="_blank">
-  <img src="demo/water-mobile.png" alt="移动端页面" width="260">
-</a>
+| PC 端 | 移动端 |
+| --- | --- |
+| [<img src="demo/water-pc.png" alt="PC 端页面" width="650">](demo/water-pc.png) | [<img src="demo/water-mobile.png" alt="移动端页面" width="120">](demo/water-mobile.png) |
 
 ## 功能
 
