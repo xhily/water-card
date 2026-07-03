@@ -16,7 +16,7 @@ export default function ViewerSection({ collections }) {
   const card = collection.cards.find((item) => item.id === selectedCardId) ?? collection.cards[0]
 
   return (
-    <main className="relative grid min-h-[calc(100vh-132px)] grid-cols-[minmax(620px,1fr)_330px] max-lg:grid-cols-1 mobile-device:grid-cols-1">
+    <main className="relative grid min-h-[calc(100vh-132px)] grid-cols-[minmax(620px,1fr)_380px] max-lg:grid-cols-1 mobile-device:grid-cols-1">
       <section id="viewer" className="viewer relative min-h-[720px] overflow-hidden px-[5vw] pb-8 pt-[62px] max-sm:min-h-[700px] max-sm:px-[18px] max-sm:py-[30px] mobile-device:min-h-[700px] mobile-device:px-[18px] mobile-device:py-[30px]">
         <SegmentedControl items={collections} activeId={collection.id} onChange={setCollectionId} ariaLabel="卡片分类" />
         <div className="mobile-character-switch relative z-20 mt-4 max-w-[420px] rounded-xl border border-[#e6dfcb1f] bg-[#080b09d9] p-3 backdrop-blur lg:hidden">

@@ -6,7 +6,7 @@
 
 在线体验：[https://pwstrick.github.io/water-card/](https://pwstrick.github.io/water-card/)
 
-<img src="public/qrcode.png" alt="水浒卡鉴赏室二维码" width="200" height="200">
+<img src="demo/qrcode.png" alt="水浒卡鉴赏室二维码" width="200" height="200">
 
 ## 功能
 
