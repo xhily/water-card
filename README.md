@@ -61,7 +61,7 @@ tests/                       单元测试
 
 人物基础资料维护在 `src/data/heroes.js`，卡组在 `src/data/collections.js` 中统一注册。每张卡图包含正反两面，具体裁切范围由 `src/config/cardImageLayouts.js` 配置。
 
-新增完整卡组时，可将按人物顺序编号的 `1.jpg`～`108.jpg` 放入 `public/assets/<卡组目录>/`，再创建对应的数据模块并注册到 `collections`。如果卡图的正反面尺寸或留白与现有卡组不同，还需要增加独立的裁切配置。
+新增完整卡组时，建议先将图片转换为质量 80～85 的 WebP，再按人物顺序以 `1.webp`～`108.webp` 命名并放入 `public/assets/<卡组目录>/`，然后创建对应的数据模块并注册到 `collections`。如果卡图的正反面尺寸或留白与现有卡组不同，还需要增加独立的裁切配置。
 
 ## 部署
 

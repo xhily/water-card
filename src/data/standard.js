@@ -1,3 +1,3 @@
 import { createCards } from './heroes.js'
 
-export const cards = createCards('standard')
+export const cards = createCards('standard', 'webp')
