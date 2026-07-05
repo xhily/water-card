@@ -5,10 +5,12 @@ import LoadingIndicator from '../common/LoadingIndicator'
 import ImageLoadError from '../common/ImageLoadError'
 import { getCardFaceBackgroundStyle } from '../../config/cardImageLayouts'
 import useImageRetry from '../../hooks/useImageRetry'
+import { getRetryImageSource } from '../../utils/imageSource'
 
 export default function ComparisonCard({ card, comparisonKey, face }) {
   const [loadState, setLoadState] = useState('loading')
   const { attempt: loadAttempt, retry: retryLoad, isAutoRetrying } = useImageRetry(loadState, card.images.source)
+  const imageSource = getRetryImageSource(card.images.source, loadAttempt)
   const {
     attributes,
     listeners,
@@ -18,7 +20,7 @@ export default function ComparisonCard({ card, comparisonKey, face }) {
     isDragging,
   } = useSortable({ id: comparisonKey })
   const imageStyle = (side) => ({
-    backgroundImage: `url("${card.images.source}")`,
+    backgroundImage: `url("${imageSource}")`,
     backgroundRepeat: 'no-repeat',
     ...getCardFaceBackgroundStyle(card.images.layout, side),
   })
@@ -33,11 +35,11 @@ export default function ComparisonCard({ card, comparisonKey, face }) {
     image.onerror = () => {
       if (!disposed) setLoadState('error')
     }
-    image.src = card.images.source
+    image.src = imageSource
     return () => {
       disposed = true
     }
-  }, [card.images.source, loadAttempt])
+  }, [imageSource])
 
   return (
     <article

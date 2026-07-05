@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { CARD_ZOOM_LIMITS, createThreeCardScene } from './threeCardScene'
 import { isUcBrowser } from '../../utils/device'
 import useImageRetry from '../../hooks/useImageRetry'
+import { getRetryImageSource } from '../../utils/imageSource'
 
 // 这些元素拥有自己的键盘语义，聚焦时不应同时触发卡片旋转、翻面或缩放。
 const INTERACTIVE_ELEMENT_SELECTOR = [
@@ -53,9 +54,13 @@ export default function useCardViewer(card) {
     if (!mount) return undefined
 
     setLoadState('loading')
+    const imageSource = getRetryImageSource(card.images.source, loadAttempt)
     const viewer = createThreeCardScene({
       mount,
-      card,
+      card: {
+        ...card,
+        images: { ...card.images, source: imageSource },
+      },
       interactionModeRef,
       onAngleChange: setAngle,
       onZoomChange: setZoom,
