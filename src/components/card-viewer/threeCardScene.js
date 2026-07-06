@@ -99,6 +99,7 @@ export function createThreeCardScene({
   geometries.push(frontFaceGeometry, backFaceGeometry)
   const textureLoader = new THREE.TextureLoader()
   let cardTexture = null
+  let foilMaterial = null
 
   loadCardTexture(textureLoader, renderer, card.images.source)
     .then((texture) => {
@@ -114,6 +115,15 @@ export function createThreeCardScene({
       const front = new THREE.Mesh(frontFaceGeometry, frontMaterial)
       front.position.z = depth / 2 + 0.005
       group.add(front)
+
+      // 奖闪只在正面叠加一层随倾斜移动的银白反光；正面网格背向相机时会被自动剔除。
+      if (card.images.layout === 'flash_prize') {
+        foilMaterial = createFoilMaterial(width, height)
+        materials.push(foilMaterial)
+        const frontFoil = new THREE.Mesh(frontFaceGeometry, foilMaterial)
+        frontFoil.position.z = depth / 2 + 0.009
+        group.add(frontFoil)
+      }
 
       const back = new THREE.Mesh(backFaceGeometry, backMaterial)
       back.position.z = -depth / 2 - 0.005
@@ -179,6 +189,17 @@ export function createThreeCardScene({
     cameraDistance += (targetDistance - cameraDistance) * 0.16
     camera.position.set(0, 0.12, cameraDistance)
     camera.lookAt(0, 0, 0)
+    if (foilMaterial) {
+      const tiltX = Math.sin(rotation.y)
+      const tiltY = Math.sin(rotation.x)
+      foilMaterial.uniforms.uShift.value = 0.48 - tiltX * 0.56 + tiltY * 0.22
+      foilMaterial.uniforms.uTilt.value.set(tiltX, tiltY)
+      foilMaterial.uniforms.uStrength.value = THREE.MathUtils.clamp(
+        0.52 + Math.abs(tiltX) * 0.42 + Math.abs(tiltY) * 0.24,
+        0.52,
+        1,
+      )
+    }
     updateReadout()
     renderer.render(scene, camera)
     if (hasMotion()) frame = requestAnimationFrame(animate)
@@ -360,6 +381,93 @@ export function createThreeCardScene({
       renderer.domElement.remove()
     },
   }
+}
+
+function createFoilMaterial(width, height) {
+  return new THREE.ShaderMaterial({
+    uniforms: {
+      uShift: { value: 0.48 },
+      uTilt: { value: new THREE.Vector2(0, 0) },
+      uStrength: { value: 0.36 },
+    },
+    vertexShader: `
+      varying vec2 vCardUv;
+
+      void main() {
+        vCardUv = vec2(position.x / ${width.toFixed(1)} + 0.5, position.y / ${height.toFixed(1)} + 0.5);
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+      }
+    `,
+    fragmentShader: `
+      uniform float uShift;
+      uniform float uStrength;
+      uniform vec2 uTilt;
+      varying vec2 vCardUv;
+
+      float hash21(vec2 point) {
+        point = fract(point * vec2(123.34, 456.21));
+        point += dot(point, point + 45.32);
+        return fract(point.x * point.y);
+      }
+
+      float valueNoise(vec2 point) {
+        vec2 cell = floor(point);
+        vec2 local = fract(point);
+        local = local * local * (3.0 - 2.0 * local);
+        return mix(
+          mix(hash21(cell), hash21(cell + vec2(1.0, 0.0)), local.x),
+          mix(hash21(cell + vec2(0.0, 1.0)), hash21(cell + vec2(1.0)), local.x),
+          local.y
+        );
+      }
+
+      void main() {
+        // 片状反光随倾斜在卡面上游移，避免形成明显的线性光束。
+        vec2 lightCenter = vec2(
+          0.5 - uTilt.x * 0.34,
+          0.52 + uTilt.y * 0.28
+        );
+        vec2 lightOffset = (vCardUv - lightCenter) * vec2(0.82, 1.18);
+        float cloud = valueNoise(vCardUv * 3.8 + vec2(uTilt.x, -uTilt.y) * 1.7);
+        float softHighlight = 1.0 - smoothstep(
+          0.13 + cloud * 0.08,
+          0.62 + cloud * 0.15,
+          length(lightOffset)
+        );
+
+        vec2 secondCenter = vec2(
+          0.24 + uTilt.x * 0.16,
+          0.78 - uTilt.y * 0.2
+        );
+        float secondCloud = valueNoise(vCardUv * 5.1 - vec2(uTilt.y, uTilt.x) * 1.3);
+        float secondHighlight = 1.0 - smoothstep(
+          0.025 + secondCloud * 0.04,
+          0.26 + secondCloud * 0.12,
+          length((vCardUv - secondCenter) * vec2(1.35, 0.9))
+        );
+
+        // 高频颗粒模拟卡面细密的金属/镭射纹理，移动时不会像一整块塑料高光。
+        vec2 grainCell = floor(vCardUv * vec2(250.0, 360.0));
+        float grain = hash21(grainCell + floor(uShift * 31.0));
+        float fineLines = 0.5 + 0.5 * sin((vCardUv.x * 0.38 + vCardUv.y) * 920.0);
+        float foilTexture = 0.72 + grain * 0.16 + pow(fineLines, 12.0) * 0.1;
+
+        float opacity = (
+          0.025
+          + softHighlight * (0.34 + cloud * 0.18)
+          + secondHighlight * (0.24 + secondCloud * 0.14)
+        ) * foilTexture * uStrength;
+        vec3 coolSilver = vec3(0.76, 0.91, 1.0);
+        vec3 warmSilver = vec3(1.0, 0.96, 0.84);
+        vec3 silver = mix(coolSilver, warmSilver, smoothstep(0.15, 0.88, vCardUv.y + uTilt.x * 0.12));
+        gl_FragColor = vec4(silver, opacity);
+      }
+    `,
+    transparent: true,
+    depthWrite: false,
+    side: THREE.FrontSide,
+    blending: THREE.AdditiveBlending,
+  })
 }
 
 function createRoundedRect(width, height, radius) {

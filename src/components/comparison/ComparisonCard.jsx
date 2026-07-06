@@ -57,7 +57,11 @@ export default function ComparisonCard({ card, comparisonKey, face }) {
     >
       <div className="comparison-card-scene relative mx-auto w-full max-w-[300px]">
         <div className={`comparison-card-inner ${face === 'back' ? 'is-back' : ''} ${loadState === 'ready' ? 'opacity-100' : 'opacity-0'}`}>
-          <div className="comparison-card-face" style={imageStyle('front')} aria-label={`${card.name}正面`} />
+          <div className="comparison-card-face" style={imageStyle('front')} aria-label={`${card.name}正面`}>
+            {card.images.layout === 'flash_prize' && (
+              <span key={`flash-${face}`} className="flash-card-shine" aria-hidden="true" />
+            )}
+          </div>
           <div className="comparison-card-face comparison-card-back" style={imageStyle('back')} aria-label={`${card.name}背面`} />
         </div>
         {loadState === 'loading' && (
