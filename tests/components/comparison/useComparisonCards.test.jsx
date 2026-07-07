@@ -39,4 +39,14 @@ describe('useComparisonCards', () => {
       'standard:034',
     ])
   })
+
+  it('可以将卡片移出对比区', () => {
+    const { result } = renderHook(() => useComparisonCards(collections))
+
+    act(() => result.current.removeCard('standard:034'))
+
+    expect(result.current.selectedCards.map(({ key }) => key)).toEqual([
+      'flash_prize:034',
+    ])
+  })
 })

@@ -17,6 +17,7 @@ export default function ComparisonSection({ collections }) {
     changePickerCollection,
     togglePickerCard,
     reorderCards,
+    removeCard,
   } = useComparisonCards(collections)
 
   return (
@@ -37,7 +38,7 @@ export default function ComparisonSection({ collections }) {
           onCardToggle={togglePickerCard}
         />
 
-        <ComparisonGrid cards={selectedCards} face={face} onReorder={reorderCards} />
+        <ComparisonGrid cards={selectedCards} face={face} onReorder={reorderCards} onRemove={removeCard} />
 
         {selectedCards.length > 0 && (
           <ComparisonFaceSwitch face={face} onChange={setFace} />

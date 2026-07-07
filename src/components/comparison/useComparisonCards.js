@@ -52,6 +52,10 @@ export default function useComparisonCards(collections) {
     })
   }
 
+  const removeCard = (key) => {
+    setSelectedKeys((items) => items.filter((item) => item !== key))
+  }
+
   return {
     pickerCollection,
     pickerCard,
@@ -61,5 +65,6 @@ export default function useComparisonCards(collections) {
     changePickerCollection,
     togglePickerCard,
     reorderCards,
+    removeCard,
   }
 }

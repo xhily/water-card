@@ -14,7 +14,7 @@ import {
 } from '@dnd-kit/sortable'
 import ComparisonCard from './ComparisonCard'
 
-export default function ComparisonGrid({ cards, face, onReorder }) {
+export default function ComparisonGrid({ cards, face, onReorder, onRemove }) {
   const sensors = useSensors(
     useSensor(MouseSensor, { activationConstraint: { distance: 6 } }),
     useSensor(TouchSensor, { activationConstraint: { delay: 220, tolerance: 8 } }),
@@ -39,6 +39,7 @@ export default function ComparisonGrid({ cards, face, onReorder }) {
               comparisonKey={key}
               card={card}
               face={face}
+              onRemove={onRemove}
             />
           ))}
         </div>

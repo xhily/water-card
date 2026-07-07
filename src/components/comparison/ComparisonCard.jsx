@@ -7,8 +7,9 @@ import { getCardFaceBackgroundStyle } from '../../config/cardImageLayouts'
 import useImageRetry from '../../hooks/useImageRetry'
 import { getRetryImageSource } from '../../utils/imageSource'
 
-export default function ComparisonCard({ card, comparisonKey, face }) {
+export default function ComparisonCard({ card, comparisonKey, face, onRemove }) {
   const [loadState, setLoadState] = useState('loading')
+  const [showActions, setShowActions] = useState(false)
   const { attempt: loadAttempt, retry: retryLoad, isAutoRetrying } = useImageRetry(loadState, card.images.source)
   const imageSource = getRetryImageSource(card.images.source, loadAttempt)
   const {
@@ -24,6 +25,16 @@ export default function ComparisonCard({ card, comparisonKey, face }) {
     backgroundRepeat: 'no-repeat',
     ...getCardFaceBackgroundStyle(card.images.layout, side),
   })
+
+  const revealActions = () => {
+    if (!isDragging) setShowActions(!showActions)
+  }
+
+  const removeCard = (event) => {
+    event.preventDefault()
+    event.stopPropagation()
+    onRemove(comparisonKey)
+  }
 
   useEffect(() => {
     let disposed = false
@@ -52,6 +63,7 @@ export default function ComparisonCard({ card, comparisonKey, face }) {
       className={`relative min-w-0 cursor-grab select-none [touch-action:pan-y] active:cursor-grabbing ${isDragging ? 'opacity-55' : 'opacity-100'}`}
       {...attributes}
       {...listeners}
+      onClick={revealActions}
       role="listitem"
       aria-label={`${card.name}，拖动调整顺序`}
     >
@@ -76,6 +88,17 @@ export default function ComparisonCard({ card, comparisonKey, face }) {
         )}
         {loadState === 'error' && !isAutoRetrying && (
           <ImageLoadError className="rounded-[5.5%] border border-[#bc675755]" onRetry={retryLoad} />
+        )}
+        {showActions && (
+          <button
+            type="button"
+            onPointerDown={(event) => event.stopPropagation()}
+            onClick={removeCard}
+            className="absolute right-2 top-2 z-20 rounded-full border border-[#d58a79aa] bg-[#150c0bea] px-3 py-1.5 text-[10px] tracking-[.12em] text-[#f0b6a9] shadow-[0_8px_24px_#0009] backdrop-blur transition-colors hover:border-[#f0b6a9] hover:bg-[#2a1210] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#d58a7980]"
+            aria-label={`将${card.name}移出对比区`}
+          >
+            删除
+          </button>
         )}
       </div>
     </article>
