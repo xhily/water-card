@@ -20,6 +20,13 @@ describe('cardImageLayouts', () => {
     })
   })
 
+  it('将立绘卡图按左右等分裁切', () => {
+    expect(getCardFaceBackgroundStyle('character_art', 'front')).toEqual({
+      backgroundSize: '200% 100%',
+      backgroundPosition: '0% 0%',
+    })
+  })
+
   it('正确换算普卡正面的偏移比例', () => {
     expect(getCardFaceBackgroundStyle('standard', 'front')).toEqual({
       backgroundSize: '217.4% 106.2%',

@@ -56,6 +56,32 @@ export default function useComparisonCards(collections) {
     setSelectedKeys((items) => items.filter((item) => item !== key))
   }
 
+  const clearCards = () => {
+    setSelectedKeys([])
+  }
+
+  const compareSameCharacter = () => {
+    setSelectedKeys((items) => {
+      const firstKey = items[0]
+      if (!firstKey) return items
+
+      const [baseCollectionId, baseCardId] = firstKey.split(':')
+      const baseCollection = collections.find((item) => item.id === baseCollectionId)
+      const baseCard = baseCollection?.cards.find((item) => item.id === baseCardId)
+      if (!baseCollection || !baseCard) return items
+
+      const orderedCollections = [
+        baseCollection,
+        ...collections.filter((item) => item.id !== baseCollection.id),
+      ]
+
+      return orderedCollections.flatMap((collection) => {
+        const card = collection.cards.find((item) => item.name === baseCard.name)
+        return card ? [comparisonCardKey(collection.id, card.id)] : []
+      })
+    })
+  }
+
   return {
     pickerCollection,
     pickerCard,
@@ -66,5 +92,7 @@ export default function useComparisonCards(collections) {
     togglePickerCard,
     reorderCards,
     removeCard,
+    clearCards,
+    compareSameCharacter,
   }
 }

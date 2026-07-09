@@ -15,6 +15,10 @@ const CARD_IMAGE_LAYOUTS = {
     front: { repeat: [0.5, 1], offset: [0, 0] },
     back: { repeat: [0.5, 1], offset: [0.5, 0] },
   },
+  character_art: {
+    front: { repeat: [0.5, 1], offset: [0, 0] },
+    back: { repeat: [0.5, 1], offset: [0.5, 0] },
+  },
 }
 
 export function getCardImageLayout(layoutName) {

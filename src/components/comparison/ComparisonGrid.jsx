@@ -14,7 +14,7 @@ import {
 } from '@dnd-kit/sortable'
 import ComparisonCard from './ComparisonCard'
 
-export default function ComparisonGrid({ cards, face, onReorder, onRemove }) {
+export default function ComparisonGrid({ cards, face, onReorder, onRemove, isClearing = false }) {
   const sensors = useSensors(
     useSensor(MouseSensor, { activationConstraint: { distance: 6 } }),
     useSensor(TouchSensor, { activationConstraint: { delay: 220, tolerance: 8 } }),
@@ -32,7 +32,11 @@ export default function ComparisonGrid({ cards, face, onReorder, onRemove }) {
       onDragEnd={({ active, over }) => onReorder(active.id, over?.id)}
     >
       <SortableContext items={cards.map(({ key }) => key)} strategy={rectSortingStrategy}>
-        <div className="grid grid-cols-[repeat(auto-fit,minmax(180px,300px))] justify-center gap-6 max-sm:grid-cols-2 max-sm:gap-3 mobile-device:grid-cols-2 mobile-device:gap-3" role="list" aria-label="已选对比卡片，可拖动排序">
+        <div
+          className={`grid grid-cols-[repeat(auto-fit,minmax(180px,300px))] justify-center gap-6 transition-[opacity,transform,filter] duration-200 ease-out max-sm:grid-cols-2 max-sm:gap-3 mobile-device:grid-cols-2 mobile-device:gap-3 ${isClearing ? 'pointer-events-none translate-y-3 scale-[.98] opacity-0 blur-[1px]' : 'translate-y-0 scale-100 opacity-100'}`}
+          role="list"
+          aria-label="已选对比卡片，可拖动排序"
+        >
           {cards.map(({ key, card }) => (
             <ComparisonCard
               key={key}
