@@ -1,48 +1,25 @@
 import { createCards, heroes } from './heroes'
 import { villains } from './villains'
+import { createNamedLookup, createNumberedCardHelpers } from './cardFactory'
 
 const CHARACTER_ART_ASSET_DIRECTORY = 'character_art'
 
 const baseHeroCards = createCards(CHARACTER_ART_ASSET_DIRECTORY, 'webp')
 
-const characterArtImage = (number) => ({
-  source: `${import.meta.env.BASE_URL}assets/${CHARACTER_ART_ASSET_DIRECTORY}/${number}.webp`,
-  layout: CHARACTER_ART_ASSET_DIRECTORY,
+const {
+  createNumberedCards: createNumberedCharacterArtCards,
+} = createNumberedCardHelpers({
+  assetDirectory: CHARACTER_ART_ASSET_DIRECTORY,
 })
 
-const cardId = (number) => String(number).padStart(3, '0')
-
-const createCharacterArtCard = ({ number, displayId, images, ...card }) => ({
-  ...card,
-  id: cardId(number),
-  displayId,
-  number,
-  images: images ?? characterArtImage(number),
-})
-
-const displayId = (prefix, index) => `${prefix}${String(index + 1).padStart(2, '0')}`
-
-const createNumberedCharacterArtCards = ({ items, startNumber, displayPrefix, mapItem }) =>
-  items.map((item, index) => createCharacterArtCard({
-    ...mapItem(item, index),
-    number: startNumber + index,
-    displayId: displayId(displayPrefix, index),
-  }))
-
-const heroByName = new Map(heroes.map((item) => [item.name, item]))
-const villainByName = new Map(villains.map((item) => [item.name, item]))
-
-const getHeroByName = (name) => {
-  const hero = heroByName.get(name)
-  if (!hero) throw new Error(`Missing base hero for character_art card: ${name}`)
-  return hero
-}
-
-const getVillainByName = (name) => {
-  const villain = villainByName.get(name)
-  if (!villain) throw new Error(`Missing base villain for character_art card: ${name}`)
-  return villain
-}
+const getHeroByName = createNamedLookup(
+  heroes,
+  (name) => `Missing base hero for character_art card: ${name}`,
+)
+const getVillainByName = createNamedLookup(
+  villains,
+  (name) => `Missing base villain for character_art card: ${name}`,
+)
 
 const createHeroBasedCard = (baseName, overrides) => ({
   ...getHeroByName(baseName),

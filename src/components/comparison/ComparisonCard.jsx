@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import LoadingIndicator from '../common/LoadingIndicator'
-import ImageLoadError from '../common/ImageLoadError'
+import ImageLoadOverlay from '../common/ImageLoadOverlay'
 import { getCardFaceBackgroundStyle } from '../../config/cardImageLayouts'
 import useImageRetry from '../../hooks/useImageRetry'
 import { getRetryImageSource } from '../../utils/imageSource'
@@ -78,19 +77,17 @@ export default function ComparisonCard({ card, comparisonKey, face, onRemove }) 
           </div>
           <div className="comparison-card-face comparison-card-back" style={imageStyle('back')} aria-label={`${card.name}背面`} />
         </div>
-        {loadState === 'loading' && (
-          <div className="pointer-events-none absolute inset-0 z-10 grid place-items-center rounded-[5.5%] border border-[#e6dfcb1f] bg-[#0b0f0c]">
-            <LoadingIndicator label={`${card.name}卡片加载中`} size="sm" glow showLabel={false} />
-          </div>
-        )}
-        {loadState === 'error' && isAutoRetrying && (
-          <div className="pointer-events-none absolute inset-0 z-10 grid place-items-center rounded-[5.5%] border border-[#e6dfcb1f] bg-[#0b0f0c]">
-            <LoadingIndicator label={`${card.name}卡片重新加载中`} size="sm" glow showLabel={false} />
-          </div>
-        )}
-        {loadState === 'error' && !isAutoRetrying && (
-          <ImageLoadError className="rounded-[5.5%] border border-[#bc675755]" onRetry={retryLoad} />
-        )}
+        <ImageLoadOverlay
+          loadState={loadState}
+          isAutoRetrying={isAutoRetrying}
+          onRetry={retryLoad}
+          loadingLabel={`${card.name}卡片加载中`}
+          retryingLabel={`${card.name}卡片重新加载中`}
+          overlayClassName="pointer-events-none absolute inset-0 z-10 grid place-items-center rounded-[5.5%] border border-[#e6dfcb1f] bg-[#0b0f0c]"
+          loadingIndicatorProps={{ size: 'sm', glow: true, showLabel: false }}
+          retryingIndicatorProps={{ size: 'sm', glow: true, showLabel: false }}
+          errorClassName="rounded-[5.5%] border border-[#bc675755]"
+        />
         {showActions && (
           <button
             type="button"

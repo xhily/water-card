@@ -1,5 +1,4 @@
-import LoadingIndicator from '../common/LoadingIndicator'
-import ImageLoadError from '../common/ImageLoadError'
+import ImageLoadOverlay from '../common/ImageLoadOverlay'
 import CardViewerControls from './CardViewerControls'
 import FocusModeToolbar from './FocusModeToolbar'
 import useCardViewer from './useCardViewer'
@@ -28,27 +27,28 @@ export default function CardViewer({ card }) {
         aria-label={`${card.name}水浒卡 three.js 360度预览区，拖动旋转，滚轮或双指缩放`}
       >
         <div ref={viewer.mountRef} className="absolute inset-0 touch-none" />
-        {viewer.loadState === 'loading' && (
-          <div className="pointer-events-none absolute inset-0 z-10 grid place-items-center" aria-live="polite">
-            <LoadingIndicator
-              label="卡片载入中…"
-              panel
-              glow
-              showCore
-              pulseLabel
-              className="backdrop-blur-sm"
-              labelClassName="text-[11px] tracking-[.28em]"
-            />
-          </div>
-        )}
-        {viewer.loadState === 'error' && viewer.isAutoRetrying && (
-          <div className="pointer-events-none absolute inset-0 z-10 grid place-items-center bg-[#0b0f0c]">
-            <LoadingIndicator label="加载失败，正在重试…" panel glow pulseLabel />
-          </div>
-        )}
-        {viewer.loadState === 'error' && !viewer.isAutoRetrying && (
-          <ImageLoadError message="卡片图片加载失败" onRetry={viewer.retryLoad} />
-        )}
+        <ImageLoadOverlay
+          loadState={viewer.loadState}
+          isAutoRetrying={viewer.isAutoRetrying}
+          onRetry={viewer.retryLoad}
+          loadingLabel="卡片载入中…"
+          retryingLabel="加载失败，正在重试…"
+          errorMessage="卡片图片加载失败"
+          overlayClassName={`pointer-events-none absolute inset-0 z-10 grid place-items-center ${viewer.loadState === 'error' ? 'bg-[#0b0f0c]' : ''}`}
+          loadingIndicatorProps={{
+            panel: true,
+            glow: true,
+            showCore: true,
+            pulseLabel: true,
+            className: 'backdrop-blur-sm',
+            labelClassName: 'text-[11px] tracking-[.28em]',
+          }}
+          retryingIndicatorProps={{
+            panel: true,
+            glow: true,
+            pulseLabel: true,
+          }}
+        />
       </div>
 
       <AngleReadout angle={viewer.angle} isFocusMode={viewer.isFocusMode} />

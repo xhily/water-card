@@ -1,13 +1,15 @@
 import { useMemo, useState } from 'react'
 import { arrayMove } from '@dnd-kit/sortable'
 import { DEFAULT_COMPARISON_CARDS, MAX_COMPARISON_CARDS } from '../../data/collections'
-
-// 同一人物在普卡和奖闪中的 id 相同，因此排序键必须带上卡组 id。
-const comparisonCardKey = (collectionId, cardId) => `${collectionId}:${cardId}`
+import {
+  createComparisonCardKey,
+  findComparisonCard,
+  parseComparisonCardKey,
+} from './comparisonCardKeys'
 
 // 将配置对象预先转为拖拽列表使用的稳定键，后续状态只维护这一种数据格式。
 const DEFAULT_SELECTED_KEYS = DEFAULT_COMPARISON_CARDS.map(({ collectionId, cardId }) => (
-  comparisonCardKey(collectionId, cardId)
+  createComparisonCardKey(collectionId, cardId)
 ))
 
 export default function useComparisonCards(collections) {
@@ -18,14 +20,12 @@ export default function useComparisonCards(collections) {
   const pickerCollection = collections.find((item) => item.id === pickerCollectionId) ?? collections[0]
   const pickerCard = pickerCollection.cards.find((item) => item.id === pickerCardId) ?? pickerCollection.cards[0]
   const selectedCards = useMemo(() => selectedKeys.flatMap((key) => {
-    const [collectionId, cardId] = key.split(':')
-    const collection = collections.find((item) => item.id === collectionId)
-    const card = collection?.cards.find((item) => item.id === cardId)
+    const { card } = findComparisonCard(collections, key)
     return card ? [{ key, card }] : []
   }), [collections, selectedKeys])
 
   const selectedPickerCardIds = selectedKeys.flatMap((key) => {
-    const [collectionId, cardId] = key.split(':')
+    const { collectionId, cardId } = parseComparisonCardKey(key)
     return collectionId === pickerCollection.id ? [cardId] : []
   })
 
@@ -36,7 +36,7 @@ export default function useComparisonCards(collections) {
   }
 
   const togglePickerCard = (card) => {
-    const key = comparisonCardKey(pickerCollection.id, card.id)
+    const key = createComparisonCardKey(pickerCollection.id, card.id)
     setPickerCardId(card.id)
     setSelectedKeys((items) => items.includes(key)
       ? items.filter((item) => item !== key)
@@ -65,9 +65,7 @@ export default function useComparisonCards(collections) {
       const firstKey = items[0]
       if (!firstKey) return items
 
-      const [baseCollectionId, baseCardId] = firstKey.split(':')
-      const baseCollection = collections.find((item) => item.id === baseCollectionId)
-      const baseCard = baseCollection?.cards.find((item) => item.id === baseCardId)
+      const { collection: baseCollection, card: baseCard } = findComparisonCard(collections, firstKey)
       if (!baseCollection || !baseCard) return items
 
       const orderedCollections = [
@@ -77,7 +75,7 @@ export default function useComparisonCards(collections) {
 
       return orderedCollections.flatMap((collection) => {
         const card = collection.cards.find((item) => item.name === baseCard.name)
-        return card ? [comparisonCardKey(collection.id, card.id)] : []
+        return card ? [createComparisonCardKey(collection.id, card.id)] : []
       })
     })
   }

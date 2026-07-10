@@ -86,21 +86,32 @@ function ComparisonFaceSwitch({ face, onChange, onCompareSameCharacter, onClear,
       <FaceButton label="正面" mark="正" size="md" active={face === 'front'} onClick={() => onChange('front')} />
       <span className="font-sans text-[22px] text-[#c7a762]" aria-hidden="true">↔</span>
       <FaceButton label="背面" mark="背" size="md" active={face === 'back'} onClick={() => onChange('back')} />
-      <button
-        type="button"
-        onClick={onCompareSameCharacter}
-        className="min-h-10 rounded-md border border-[#3a4039] bg-[#111611] px-5 text-[11px] tracking-[.16em] text-[#c9ad65] transition-colors hover:border-[#8a7650] hover:text-[#e0c887] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#c7a76266] max-sm:w-full mobile-device:w-full"
-      >
-        同人物对比
-      </button>
-      <button
-        type="button"
-        onClick={onClear}
-        disabled={isClearing}
-        className={`min-h-10 rounded-md border border-[#4d3430] bg-[#15100f] px-5 text-[11px] tracking-[.16em] text-[#d58a79] transition-[border-color,color,opacity,transform] duration-150 hover:border-[#bc6757] hover:text-[#f0b6a9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#bc675766] disabled:cursor-not-allowed disabled:scale-95 disabled:opacity-55 max-sm:w-full mobile-device:w-full ${isClearing ? 'border-[#bc6757] text-[#f0b6a9]' : ''}`}
-      >
-        {isClearing ? '清空中' : '清空对比区'}
-      </button>
+      <div className="flex items-center gap-5 max-sm:w-full max-sm:gap-3 mobile-device:w-full mobile-device:gap-3">
+        <ComparisonActionButton onClick={onCompareSameCharacter}>
+          同人物对比
+        </ComparisonActionButton>
+        <ComparisonActionButton tone="danger" onClick={onClear} disabled={isClearing} active={isClearing}>
+          {isClearing ? '清空中' : '清空对比区'}
+        </ComparisonActionButton>
+      </div>
     </div>
+  )
+}
+
+function ComparisonActionButton({ tone = 'gold', active = false, children, className = '', ...buttonProps }) {
+  const tones = {
+    gold: 'border-[#3a4039] bg-[#111611] text-[#c9ad65] hover:border-[#8a7650] hover:text-[#e0c887] focus-visible:ring-[#c7a76266]',
+    danger: 'border-[#4d3430] bg-[#15100f] text-[#d58a79] hover:border-[#bc6757] hover:text-[#f0b6a9] focus-visible:ring-[#bc675766]',
+  }
+  const activeTone = tone === 'danger' ? 'border-[#bc6757] text-[#f0b6a9]' : 'border-[#8a7650] text-[#e0c887]'
+
+  return (
+    <button
+      type="button"
+      className={`min-h-10 rounded-md border px-5 text-[11px] tracking-[.16em] transition-[border-color,color,opacity,transform] duration-150 focus-visible:outline-none focus-visible:ring-2 disabled:cursor-not-allowed disabled:scale-95 disabled:opacity-55 max-sm:flex-1 max-sm:px-3 mobile-device:flex-1 mobile-device:px-3 ${tones[tone]} ${active ? activeTone : ''} ${className}`}
+      {...buttonProps}
+    >
+      {children}
+    </button>
   )
 }

@@ -1,5 +1,6 @@
 import { createCards, heroes } from './heroes'
 import { createVillainCards } from './villains'
+import { cardId, createNamedLookup, createNumberedCardHelpers } from './cardFactory'
 
 // 冷烫卡图均为正面在左、背面在右的合并图。
 const CODE_PERM_ASSET_DIRECTORY = 'code_perm'
@@ -14,11 +15,11 @@ const CODE_PERM_HERO_NUMBER_OVERRIDES = {
   朱贵: 92,
 }
 
-const cardId = (number) => String(number).padStart(3, '0')
-
-const codePermImage = (number) => ({
-  source: `${import.meta.env.BASE_URL}assets/${CODE_PERM_ASSET_DIRECTORY}/${number}.webp`,
-  layout: CODE_PERM_ASSET_DIRECTORY,
+const {
+  createNumberedCards: createNumberedCodePermCards,
+  image: codePermImage,
+} = createNumberedCardHelpers({
+  assetDirectory: CODE_PERM_ASSET_DIRECTORY,
 })
 
 const createBaseHeroCards = () =>
@@ -37,23 +38,6 @@ const createBaseHeroCards = () =>
     .sort((a, b) => a.number - b.number)
 
 const baseHeroCards = createBaseHeroCards()
-
-const createCodePermCard = ({ number, displayId, images, ...card }) => ({
-  ...card,
-  id: cardId(number),
-  displayId,
-  number,
-  images: images ?? codePermImage(number),
-})
-
-const displayId = (prefix, index) => `${prefix}${String(index + 1).padStart(2, '0')}`
-
-const createNumberedCodePermCards = ({ items, startNumber, displayPrefix, mapItem }) =>
-  items.map((item, index) => createCodePermCard({
-    ...mapItem(item, index),
-    number: startNumber + index,
-    displayId: displayId(displayPrefix, index),
-  }))
 
 const variantItems = [
   ['雪夜林冲', '林冲'],
@@ -74,13 +58,10 @@ const variantItems = [
   ['金大坚', '金大坚'],
 ]
 
-const heroByName = new Map(heroes.map((item) => [item.name, item]))
-
-const getHeroByName = (name) => {
-  const hero = heroByName.get(name)
-  if (!hero) throw new Error(`Missing base hero for code_perm card: ${name}`)
-  return hero
-}
+const getHeroByName = createNamedLookup(
+  heroes,
+  (name) => `Missing base hero for code_perm card: ${name}`,
+)
 
 const createHeroBasedCard = (baseName, overrides) => ({
   ...getHeroByName(baseName),
