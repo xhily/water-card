@@ -95,11 +95,7 @@ export default function ComparisonCard({ card, comparisonKey, face, onRemove }) 
       <div className={`comparison-card-scene relative mx-auto w-full max-w-[300px] transition-[opacity,transform,filter] duration-200 ease-out ${isRemoving ? 'translate-y-3 scale-95 opacity-0 blur-[1px]' : 'translate-y-0 scale-100 opacity-100'}`}>
         {faceLayoutReady && (
           <div className={`comparison-card-inner opacity-100 ${face === 'back' ? 'is-back' : ''} ${faceTransitionReady ? 'is-face-transition-ready' : ''}`}>
-            <div className="comparison-card-face" style={imageStyle('front')} aria-label={`${card.name}正面`}>
-              {card.effects?.foil && (
-                <span key={`flash-${face}`} className="flash-card-shine" aria-hidden="true" />
-              )}
-            </div>
+            <div className="comparison-card-face" style={imageStyle('front')} aria-label={`${card.name}正面`} />
             <div className="comparison-card-face comparison-card-back" style={imageStyle('back')} aria-label={`${card.name}背面`} />
           </div>
         )}
@@ -108,9 +104,7 @@ export default function ComparisonCard({ card, comparisonKey, face, onRemove }) 
             className={`comparison-card-face comparison-card-static-face transition-opacity duration-300 ${loadState === 'ready' ? 'opacity-100' : 'opacity-0'}`}
             style={imageStyle(face)}
             aria-label={`${card.name}${face === 'back' ? '背面' : '正面'}`}
-          >
-            {face === 'front' && card.effects?.foil && <span className="flash-card-shine" aria-hidden="true" />}
-          </div>
+          />
         )}
         <ImageLoadOverlay
           loadState={loadState}
